@@ -1,0 +1,89 @@
+
+alias DATA_FILE = "small.txt"
+# alias DATA_FILE = "large.txt"
+
+alias MAX_RED = 12 
+alias RED = "red"
+alias MAX_GREEN = 13
+alias GREEN = "green"
+alias MAX_BLUE = 14
+alias BLUE = "blue"
+
+fn str_startswith(target_string: String, prefix: String) -> Bool:
+    if len(prefix) > len(target_string):
+        return False
+
+    for i in range(len(prefix)):
+        if target_string[i] != prefix[i]:
+            return False
+    
+    return True
+
+fn str_split(target_string: String, delim: String) -> DynamicVector[String]:
+    var output = DynamicVector[String]()
+
+    var last_idx = 0
+    var d_len = len(delim)
+    for idx in range(len(target_string)):
+        let chunk: String = target_string[idx:idx+d_len]
+        if chunk == delim:
+            output.push_back(chunk)
+            last_idx = idx
+        
+    return output
+
+
+fn part1() raises -> Int:
+    let text_path = Path(DATA_FILE)
+    var f = open(text_path, "r")
+
+    let text_lines = str_split(f.read(), "\n")
+    var valid_sum = 0
+    for i in range(len(text_lines)):
+        var is_valid = True
+        let split_line = str_split(text_lines[i], ":")
+        let reveal_strs = str_split(split_line[1], ";")
+        for j in range(len(reveal_strs)):
+            let cubes_strs = str_split(reveal_strs[j], ",")
+            for k in range(len(cubes_strs)):
+                var char_idx = 0
+                var num_str = ""
+                let cube_str = cubes_strs[k]
+                var num_cubes = 0
+                while isdigit(cube_str[char_idx]):
+                    num_cubes = num_cubes * 10 + atol(cube_str[char_idx])
+                    char_idx += 1
+                
+                let color_str = cube_str[char_idx+1]
+                if (color_str == BLUE and num_cubes > MAX_BLUE) \
+                    or (color_str == GREEN and num_cubes > MAX_GREEN) \
+                    or (color_str == RED and num_cubes > MAX_RED):
+                    is_valid = False
+                    break
+            
+            if not is_valid:
+                break
+        
+        if is_valid:
+            valid_sum += (i + 1)
+    
+    return valid_sum
+                
+
+
+
+fn part2() raises -> Int:
+    return -1
+
+fn main() raises:
+    let part1_solution = part1()
+    print("part 1")    
+    print(part1_solution)
+    print()
+
+    let part2_solution = part2()
+    print("part 2")
+    print(part2_solution)
+    print()
+            
+        
